@@ -8,6 +8,32 @@
 
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
+BigInt* BigInt_construct_from_str(char* string) {
+    char* str = string;
+    BigInt* new_big_int = malloc(sizeof(BigInt));
+    
+    int strlength = (int)strlen(str);
+    
+    if (str[0] == '-')  {
+        strlength -= 1;
+        str = str + 1;
+        new_big_int->is_negative = 1;
+    } else {
+        new_big_int->is_negative = 0;
+    }
+    
+    new_big_int->digits = malloc(strlength * sizeof(char));
+    
+    int i;
+    for (i = 0; i < strlength; i++) {
+        new_big_int->digits[i] = str[strlength - i - 1] - '0';
+    }
+    
+    new_big_int->num_digits = new_big_int->num_allocated_digits = strlength;
+    
+    return new_big_int;
+}
+
 BigInt* BigInt_construct(int value) {
 
     BigInt* new_big_int = malloc(sizeof(BigInt));
@@ -326,6 +352,24 @@ int BigInt_to_int(const BigInt* big_int) {
 
     return value;
 
+}
+
+char* BigInt_to_str(const BigInt* big_int)   {
+    int strlength = big_int->num_digits + big_int->is_negative;
+    char* str = calloc(strlength + 1, sizeof(char));
+    
+    int i = 0;
+    if (big_int->is_negative)   {
+        str[i++] = '-';
+    }
+    
+    for (; i < strlength; i++)  {
+        str[i] = big_int->digits[ big_int->num_digits - i - !big_int->is_negative]  + '0';
+    }
+    
+    str[i] = '\0';
+    
+    return str;
 }
 
 void BigInt_print(const BigInt* big_int) {

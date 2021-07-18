@@ -26,6 +26,7 @@ typedef struct BigInt {
 // Caller is responsible for freeing the new BigInt with a
 // corresponding call to BigInt_free.
 BigInt* BigInt_construct(int value);
+BigInt* BigInt_construct_from_str(char* str);
 
 // Frees the memory for a BigInt allocated using BigInt_construct.
 void BigInt_free(BigInt* big_int);
@@ -62,6 +63,9 @@ void BigInt_multiply_int(BigInt* big_int, const int multiplier);
 // value of big_int fits within the size of an int on the target
 // environment.  Result is undefined if this is not the case.
 int BigInt_to_int(const BigInt* big_int);
+
+// Returns the value of big_int as char array
+char* BigInt_to_str(const BigInt* big_int);
 
 // Prints the contents of big_int to stdout.
 void BigInt_print(const BigInt* big_int);
