@@ -39,12 +39,17 @@ BigInt* BigInt_construct(int value) {
 }
 
 void BigInt_free(BigInt* big_int) {
-    free(big_int->digits);
-    free(big_int);
+    if (big_int->digits != NULL)    {
+        free(big_int->digits);
+        big_int->digits = NULL;
+    }
+    if (big_int != NULL)    {
+        free(big_int);
+        big_int = NULL;
+    }
 }
 
-void BigInt_assign(BigInt* target, const BigInt* source)
-{
+void BigInt_assign(BigInt* target, const BigInt* source)    {
     BigInt_ensure_digits(target, source->num_digits);
 
     int i;
@@ -280,7 +285,10 @@ void BigInt_multiply(BigInt* big_int, const BigInt* multiplier) {
             } else {
                 total = carry;
             }
-
+            
+            // Avoid segmentation fault when working with very large numbers as 1000!
+            BigInt_ensure_digits(addend, i + j + 1);
+            
             addend->digits[i + j] = total % 10;
             carry = total / 10;
         }
@@ -327,15 +335,12 @@ void BigInt_print(const BigInt* big_int) {
     }
 }
 
+
 void BigInt_ensure_digits(BigInt* big_int, unsigned int digits_needed) {
     if(big_int->num_allocated_digits < digits_needed) {
-        unsigned char* digits = big_int->digits;
-
-        big_int->digits = malloc(digits_needed * sizeof(unsigned char));
-        memcpy(big_int->digits, digits, big_int->num_digits);    
+        //use realloc to avoid segmentation fault
+        big_int->digits = realloc(big_int->digits, digits_needed);
         big_int->num_allocated_digits = digits_needed;
-
-        free(digits);
     }
 }
 

@@ -101,7 +101,7 @@ extern const char* OPERATION_NAMES[];
 // the specified OPERATION_TYPE.
 typedef void*(*Generic_function)(void*);
 
-void BigInt_test_basic();
+void BigInt_test_basic(void);
 void BigInt_test_construct(int value);
 void BigInt_test_operations(int a, int b);
 void BigInt_test_permutations(Generic_function BigInt_operation_to_test,
