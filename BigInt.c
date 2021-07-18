@@ -373,6 +373,10 @@ char* BigInt_to_str(const BigInt* big_int)   {
 }
 
 void BigInt_print(const BigInt* big_int) {
+    if (big_int->is_negative)   {
+        printf("-");
+    }
+    
     int i;
     for(i = big_int->num_digits - 1; i >= 0; --i) {
         printf("%i", big_int->digits[i]);
