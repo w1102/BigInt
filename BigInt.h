@@ -54,6 +54,8 @@ void BigInt_add_int(BigInt* big_int, const int addend);
 void BigInt_subtract(BigInt* big_int, const BigInt* to_subtract);
 void BigInt_subtract_int(BigInt* big_int, const int to_subtract);
 
+void BigInt_multiply_by_10(BigInt* big_int);
+
 // Multiplies the value in big_int by multiplier.  Places the
 // result in big_int.
 void BigInt_multiply(BigInt* big_int, const BigInt* multiplier);
@@ -89,6 +91,9 @@ void BigInt_add_digits(BigInt* big_int, const BigInt* to_add);
 // Performs an unsigned subtraction of to_subtract from big_int; subtracts the digits
 // without regard for the sign of either parameter. 
 void BigInt_subtract_digits(BigInt* big_int, const BigInt* to_subtract);
+
+// Performs an swap two digits
+void BigInt_swap_digits(unsigned char* a, unsigned char* b);
 
 //============================================================================
 // Unit tests

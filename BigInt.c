@@ -274,6 +274,18 @@ void BigInt_subtract_digits(BigInt* big_int, const BigInt* to_subtract) {
     assert(carry == 0);
 }
 
+void BigInt_multiply_by_10(BigInt* big_int) {
+    BigInt_ensure_digits(big_int, ++big_int->num_digits);
+    
+    int i;
+    for (i = big_int->num_digits - 1; i >= 1; i--)  {
+        BigInt_swap_digits(&big_int->digits[i], &big_int->digits[i-1]);
+    }
+    
+    big_int->digits[0] = 0;
+    
+}
+
 // Multiply using the pencil and paper method.  Complexity is O(n*m) where n, m are
 // the number of digits in big_int and multiplier, respectively.
 void BigInt_multiply(BigInt* big_int, const BigInt* multiplier) {
@@ -390,5 +402,11 @@ void BigInt_ensure_digits(BigInt* big_int, unsigned int digits_needed) {
         big_int->digits = realloc(big_int->digits, digits_needed);
         big_int->num_allocated_digits = digits_needed;
     }
+}
+
+void BigInt_swap_digits(unsigned char* a, unsigned char* b)    {
+    unsigned char tmp = *a;
+    *a  = *b;
+    *b = tmp;
 }
 
