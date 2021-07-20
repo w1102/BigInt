@@ -27,6 +27,7 @@ typedef struct BigInt {
 // corresponding call to BigInt_free.
 BigInt* BigInt_construct(int value);
 BigInt* BigInt_construct_from_str(char* str);
+BigInt* BigInt_construct_with_size(int value, unsigned int size);
 
 // Frees the memory for a BigInt allocated using BigInt_construct.
 void BigInt_free(BigInt* big_int);

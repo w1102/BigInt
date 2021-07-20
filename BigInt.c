@@ -8,6 +8,35 @@
 
 #define BIGINT_MAX(x, y) ((x) > (y) ? (x) : (y))
 
+BigInt* BigInt_construct_with_size(int value, unsigned int size)  {
+    BigInt* new_big_int = malloc(sizeof(BigInt));
+    
+    if(value < 0) {
+        new_big_int->is_negative = 1;
+        value *= -1;
+    } else {
+        new_big_int->is_negative = 0;
+    }
+
+    new_big_int->num_digits = floor(log10(value)) + 1;
+
+    // Special case for 0
+    if(new_big_int->num_digits == 0) {
+        new_big_int->num_digits = 1;
+    }
+
+    new_big_int->num_allocated_digits = size;
+    new_big_int->digits = malloc(size * sizeof(unsigned char));
+
+    int i;
+    for(i = 0; i < new_big_int->num_digits; i++) {
+        new_big_int->digits[i] = value % 10;
+        value /= 10;
+    }
+
+    return new_big_int;
+}
+
 BigInt* BigInt_construct_from_str(char* string) {
     char* str = string;
     BigInt* new_big_int = malloc(sizeof(BigInt));
