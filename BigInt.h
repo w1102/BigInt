@@ -38,6 +38,9 @@ void BigInt_assign(BigInt* target, const BigInt* source);
 ///Sets the value of the target BigInt to the value of the source int.
 void BigInt_assign_int(BigInt* target, const int source);
 
+//Set all digits of the target BigInt to 0 and do nothing more
+void BigInt_assign_zero(BigInt* big_int);
+
 //============================================================================
 // Basic mathematical operations
 //============================================================================
@@ -54,12 +57,22 @@ void BigInt_add_int(BigInt* big_int, const int addend);
 void BigInt_subtract(BigInt* big_int, const BigInt* to_subtract);
 void BigInt_subtract_int(BigInt* big_int, const int to_subtract);
 
-void BigInt_multiply_by_10(BigInt* big_int);
 
-// Multiplies the value in big_int by multiplier.  Places the
-// result in big_int.
+
+// Multiplies the value in big_int by multiplier.
+//Places the result in big_int.
 void BigInt_multiply(BigInt* big_int, const BigInt* multiplier);
 void BigInt_multiply_int(BigInt* big_int, const int multiplier);
+void BigInt_multiply_by_10(BigInt* big_int);
+
+
+
+//Division the value in 'dividend' by 'divisor'.
+//Places the result in 'quotient' if it != NULL
+//Places the remainder in 'remainder' if it != NULL
+void BigInt_division(BigInt* dividend, const BigInt* divisor, BigInt* quotient, BigInt* remainder);
+void BigInt_division_by_10(BigInt* big_int);
+
 
 // Returns the value of big_int as an integer.  Requires that the
 // value of big_int fits within the size of an int on the target
@@ -94,6 +107,7 @@ void BigInt_subtract_digits(BigInt* big_int, const BigInt* to_subtract);
 
 // Performs an swap two digits
 void BigInt_swap_digits(unsigned char* a, unsigned char* b);
+
 
 //============================================================================
 // Unit tests

@@ -348,6 +348,113 @@ void BigInt_multiply_int(BigInt* big_int, const int multiplier) {
     BigInt_free(big_int_multiplier);
 }
 
+
+void BigInt_division_by_10(BigInt* big_int) {
+    int i;
+    for (i = 0; i < big_int->num_digits - 1; i++)   {
+        BigInt_swap_digits(&big_int->digits[i], &big_int->digits[i+1]);
+    }
+    
+    big_int->num_digits -= 1;
+}
+
+// division using repeated subtraction
+void BigInt_division(BigInt* dividend, const BigInt* divisor, BigInt* quotient, BigInt* remainder)   {
+    
+    if (BigInt_to_int(divisor) == 0)    {
+        printf("Divisor is zero!\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    
+    int non_quotient = 0, non_remainder = 0;
+    
+    if (quotient == NULL) non_quotient = 1;
+    
+    if (remainder == NULL)  {
+        non_remainder = 1;
+        remainder = BigInt_construct(0);
+    }
+    
+    // if divisor > dividend
+    if (BigInt_compare(dividend, divisor) == -1)  {
+        if (!non_remainder)
+            BigInt_assign(remainder, dividend);
+        if (non_quotient)
+            BigInt_add_int(dividend, 0);
+        else
+            BigInt_assign_int(quotient, 0);
+    
+    } else {
+        BigInt* divisor_cpy = BigInt_construct(0);
+        BigInt_assign(divisor_cpy, divisor);
+        BigInt_assign(remainder, dividend);
+        
+        //remainder > divisor
+        int is_first_loop = 1, i, j;
+        while (BigInt_compare(remainder, divisor) == 1) {
+            
+            j = 0; // multiply divisor with 10 to decrease numbers of loop
+            while (BigInt_compare(remainder, divisor_cpy) == 1)   {
+                BigInt_multiply_by_10(divisor_cpy);
+                j++;
+            }
+            
+            BigInt_division_by_10(divisor_cpy);
+            
+            if (is_first_loop == 1)    {
+                is_first_loop = 0;
+                if (!non_quotient) {
+                    BigInt_ensure_digits(quotient, j);
+                    quotient->num_digits = j;
+                    BigInt_assign_zero(quotient);
+                } else  {
+                    dividend->num_digits = j;
+                    BigInt_assign_zero(dividend);
+                }
+            }
+            
+            
+            i = 0; // while remainder > divisor_cpy
+            while (BigInt_compare(remainder, divisor_cpy) == 1) {
+                BigInt_subtract(remainder, divisor_cpy);
+                i++;
+            }
+
+            if (i <= 9) {
+                if (!non_quotient)
+                    quotient->digits[j - 1] = i;
+                else
+                    dividend->digits[j - 1] = i;
+            }
+
+            BigInt_assign(divisor_cpy, divisor);
+        }
+        
+        if (BigInt_compare(remainder, divisor) == 0) {
+            BigInt_assign_int(remainder, 0);
+            if (!non_quotient)
+                BigInt_add_int(quotient, 1);
+            else
+                BigInt_add_int(dividend, 1);
+        }
+        BigInt_free(divisor_cpy);
+    }
+    
+    //sign process
+    int sign = dividend->is_negative == divisor->is_negative ? 0 : 1;
+    if (!non_quotient)
+        quotient->is_negative = sign;
+    if (!non_remainder)
+        remainder->is_negative = sign;
+    
+    if (non_remainder) {
+        BigInt_free(remainder);
+    }
+   
+}
+
+
 int BigInt_to_int(const BigInt* big_int) {
     int value = 0;
     int tens_multiplier = 1;
@@ -402,6 +509,12 @@ void BigInt_ensure_digits(BigInt* big_int, unsigned int digits_needed) {
         big_int->digits = realloc(big_int->digits, digits_needed);
         big_int->num_allocated_digits = digits_needed;
     }
+}
+
+void BigInt_assign_zero(BigInt* big_int)    {
+    int i;
+    for (i = 0; i < big_int->num_digits; i++)
+        big_int->digits[i] = 0;
 }
 
 void BigInt_swap_digits(unsigned char* a, unsigned char* b)    {
