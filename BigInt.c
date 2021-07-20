@@ -6,7 +6,7 @@
 
 #include "BigInt.h"
 
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define BIGINT_MAX(x, y) ((x) > (y) ? (x) : (y))
 
 BigInt* BigInt_construct_from_str(char* string) {
     char* str = string;
@@ -175,7 +175,7 @@ void BigInt_add_int(BigInt* big_int, const int addend) {
 }
 
 void BigInt_add_digits(BigInt* big_int, const BigInt* addend) {
-    unsigned int digits_needed = MAX(big_int->num_digits, addend->num_digits) + 1;
+    unsigned int digits_needed = BIGINT_MAX(big_int->num_digits, addend->num_digits) + 1;
     BigInt_ensure_digits(big_int, digits_needed);
 
     int i;
@@ -220,7 +220,7 @@ void BigInt_subtract_int(BigInt* big_int, const int to_subtract) {
 
 void BigInt_subtract_digits(BigInt* big_int, const BigInt* to_subtract) {
 
-    unsigned int digits_needed = MAX(big_int->num_digits, to_subtract->num_digits) + 1;
+    unsigned int digits_needed = BIGINT_MAX(big_int->num_digits, to_subtract->num_digits) + 1;
     BigInt_ensure_digits(big_int, digits_needed);
     
     // Determine the larger int.  This will go on "top"
