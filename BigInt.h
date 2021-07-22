@@ -50,19 +50,19 @@ void BigInt_assign_zero(BigInt* big_int);
 int BigInt_compare(const BigInt* a, const BigInt* b);
 
 // Adds the value in addend to big_int.  Places the result in big_int.
-void BigInt_add(BigInt* big_int, const BigInt* addend);
+void BigInt_add(BigInt* result, BigInt* big_int, const BigInt* addend);
 void BigInt_add_int(BigInt* big_int, const int addend);
 
 // Subtracts the value of to_subtract from big_int. 
 // Places the result in big_int.
-void BigInt_subtract(BigInt* big_int, const BigInt* to_subtract);
+void BigInt_subtract(BigInt* result, BigInt* big_int, const BigInt* to_subtract);
 void BigInt_subtract_int(BigInt* big_int, const int to_subtract);
 
 
 
 // Multiplies the value in big_int by multiplier.
 //Places the result in big_int.
-void BigInt_multiply(BigInt* big_int, const BigInt* multiplier);
+void BigInt_multiply(BigInt* result, BigInt* big_int, const BigInt* multiplier);
 void BigInt_multiply_int(BigInt* big_int, int multiplier);
 void BigInt_multiply_by_10(BigInt* big_int);
 

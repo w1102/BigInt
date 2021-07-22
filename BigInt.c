@@ -180,26 +180,36 @@ int BigInt_compare_digits(const BigInt* a, const BigInt* b) {
     return 0;
 }
 
-void BigInt_add(BigInt* big_int, const BigInt* addend) {
+void BigInt_add(BigInt* result, BigInt* big_int, const BigInt* addend) {
+    if (result)
+        BigInt_assign(result, big_int);
     if(big_int->is_negative == addend->is_negative) {
         // Sign will never change in this case so just leave
         // it as-is.
-        BigInt_add_digits(big_int, addend);
+        if (result)
+            BigInt_add_digits(result, addend);
+        else
+            BigInt_add_digits(big_int, addend);
     } else {
         // Figure out the sign.  Need to do this before calculating the digits of
         // the digits result because changing those in big_int will affect the result
         // of the compare.
         unsigned int result_is_negative = BigInt_compare_digits(big_int, addend) > 0 ?
                 big_int->is_negative : addend->is_negative;
-    
-        BigInt_subtract_digits(big_int, addend);
-        big_int->is_negative = result_is_negative;
+        
+        if (result) {
+            BigInt_subtract_digits(result, addend);
+            result->is_negative = result_is_negative;
+        } else  {
+            BigInt_subtract_digits(big_int, addend);
+            big_int->is_negative = result_is_negative;
+        }
     }
 }
 
 void BigInt_add_int(BigInt* big_int, const int addend) {
     BigInt* big_int_addend = BigInt_construct(addend);
-    BigInt_add(big_int, big_int_addend);
+    BigInt_add(NULL, big_int, big_int_addend);
     BigInt_free(big_int_addend);
 }
 
@@ -223,7 +233,8 @@ void BigInt_add_digits(BigInt* big_int, const BigInt* addend) {
     }
 }
 
-void BigInt_subtract(BigInt* big_int, const BigInt* to_subtract) {
+void BigInt_subtract(BigInt* result, BigInt* big_int, const BigInt* to_subtract) {
+    if (result) BigInt_assign(result, big_int);
     // Figure out the sign.  Need to do this before calculating the digits of
     // the digits result because changing those in big_int will affect the result
     // of the compare.
@@ -231,9 +242,15 @@ void BigInt_subtract(BigInt* big_int, const BigInt* to_subtract) {
     
     // Calculate the digits
     if(big_int->is_negative == to_subtract->is_negative) {
-        BigInt_subtract_digits(big_int, to_subtract);
+        if (result)
+            BigInt_subtract_digits(result, to_subtract);
+        else
+            BigInt_subtract_digits(big_int, to_subtract);
     } else {
-        BigInt_add_digits(big_int, to_subtract);
+        if (result)
+            BigInt_add_digits(result, to_subtract);
+        else
+            BigInt_add_digits(big_int, to_subtract);
     }
     
     // Figure out the sign
@@ -243,7 +260,7 @@ void BigInt_subtract(BigInt* big_int, const BigInt* to_subtract) {
 
 void BigInt_subtract_int(BigInt* big_int, const int to_subtract) {
     BigInt* big_int_to_subtract = BigInt_construct(to_subtract);
-    BigInt_subtract(big_int, big_int_to_subtract);
+    BigInt_subtract(NULL, big_int, big_int_to_subtract);
     BigInt_free(big_int_to_subtract);
 }
 
@@ -317,11 +334,15 @@ void BigInt_multiply_by_10(BigInt* big_int) {
 
 // Multiply using the pencil and paper method.  Complexity is O(n*m) where n, m are
 // the number of digits in big_int and multiplier, respectively.
-void BigInt_multiply(BigInt* big_int, const BigInt* multiplier) {
+void BigInt_multiply(BigInt* result, BigInt* big_int, const BigInt* multiplier) {
 
     // Need to keep track of the result in a separate variable because we need
     // big_int to retain its original value throughout the course of the calculation.
-    BigInt* result = BigInt_construct(0);
+    int non_result = 0;
+    if (result == NULL) {
+        result = BigInt_construct(0);
+        non_result = 1;
+    }
 
     // addend will hold the amount to be added to the result for each step of
     // the multiplication.
@@ -360,14 +381,16 @@ void BigInt_multiply(BigInt* big_int, const BigInt* multiplier) {
             carry = total / 10;
         }
 
-        BigInt_add(result, addend);
+        BigInt_add(NULL, result, addend);
     }
 
     result->is_negative = big_int->is_negative != multiplier->is_negative;    
 
     // Place the result in big_int and clean things up
-    BigInt_assign(big_int, result);
-    BigInt_free(result);
+    if (non_result) {
+        BigInt_assign(big_int, result);
+        BigInt_free(result);
+    }
     BigInt_free(addend);
 }
 
@@ -427,7 +450,7 @@ void BigInt_multiply_int(BigInt* big_int, int multiplier) {
             BigInt_multiply_by_10(addend);
         k++;
         multiplier /= 10;
-        BigInt_add(result, addend);
+        BigInt_add(NULL, result, addend);
         addend->num_digits = 1;
 
     }
@@ -510,7 +533,7 @@ void BigInt_division(BigInt* dividend, const BigInt* divisor, BigInt* quotient, 
             
             i = 0; // while remainder > divisor_cpy
             while (BigInt_compare(remainder, divisor_cpy) == 1) {
-                BigInt_subtract(remainder, divisor_cpy);
+                BigInt_subtract(NULL, remainder, divisor_cpy);
                 i++;
             }
 
