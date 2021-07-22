@@ -371,10 +371,74 @@ void BigInt_multiply(BigInt* big_int, const BigInt* multiplier) {
     BigInt_free(addend);
 }
 
-void BigInt_multiply_int(BigInt* big_int, const int multiplier) {
-    BigInt* big_int_multiplier = BigInt_construct(multiplier);
-    BigInt_multiply(big_int, big_int_multiplier);
-    BigInt_free(big_int_multiplier);
+
+void BigInt_multiply_int(BigInt* big_int, int multiplier) {
+    int multiplier_is_negative = 0;
+    if (multiplier < 0) {
+        multiplier = - multiplier;
+        multiplier_is_negative = 1;
+    }
+
+    // Need to keep track of the result in a separate variable because we need
+    // big_int to retain its original value throughout the course of the calculation.
+    BigInt* result = BigInt_construct(0);
+
+    // addend will hold the amount to be added to the result for each step of
+    // the multiplication.
+    BigInt* addend = BigInt_construct(0);
+
+    unsigned int digits_needed = big_int->num_digits + addend->num_digits + 1;
+    BigInt_ensure_digits(addend, digits_needed);
+
+    int i = 0, j, k = 0;
+    int carry = 0;
+    while (multiplier > 0) {
+    
+
+        if(i > 0) {
+            addend->num_digits = i;
+            addend->digits[i - 1] = 0;
+        }
+
+        for(j = 0; j < big_int->num_digits|| carry > 0; ++j) {
+            if(j + i == addend->num_digits) {
+                ++addend->num_digits;
+            }
+
+            assert(digits_needed >= j + 1);
+           
+            int total;
+            if(j < big_int->num_digits) {
+                total = (big_int->digits[j] * (multiplier%10)) + carry;
+            } else {
+                total = carry;
+            }
+            
+            // Avoid segmentation fault when working with very large numbers as 1000!
+            BigInt_ensure_digits(addend, i + j + 1);
+            
+            addend->digits[i + j] = total % 10;
+            carry = total / 10;
+            
+        }
+        
+        int l;
+        for (l = 0; l < k; l++)
+            BigInt_multiply_by_10(addend);
+        k++;
+        multiplier /= 10;
+        BigInt_add(result, addend);
+        addend->num_digits = 1;
+
+    }
+
+    
+    result->is_negative = big_int->is_negative != multiplier_is_negative;
+
+    // Place the result in big_int and clean things up
+    BigInt_assign(big_int, result);
+    BigInt_free(result);
+    BigInt_free(addend);
 }
 
 

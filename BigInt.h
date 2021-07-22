@@ -63,7 +63,7 @@ void BigInt_subtract_int(BigInt* big_int, const int to_subtract);
 // Multiplies the value in big_int by multiplier.
 //Places the result in big_int.
 void BigInt_multiply(BigInt* big_int, const BigInt* multiplier);
-void BigInt_multiply_int(BigInt* big_int, const int multiplier);
+void BigInt_multiply_int(BigInt* big_int, int multiplier);
 void BigInt_multiply_by_10(BigInt* big_int);
 
 
