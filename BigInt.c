@@ -142,6 +142,14 @@ void BigInt_assign_int(BigInt* target, const int source) {
     }
 }
 
+int BigInt_is_zero(const BigInt* big_int)   {
+    int i;
+    for (i = 0; i < big_int->num_digits; i++)
+        if (big_int->digits[i] != 0)
+            return 0;
+    return 1;
+}
+
 int BigInt_compare(const BigInt* a, const BigInt* b) {
     // Quick return if one is negative and the other isn't
     if(a->num_digits > 0 || a->digits[0] > 0 || b->num_digits > 0 || b->digits[0] > 0) {

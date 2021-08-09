@@ -48,6 +48,7 @@ void BigInt_assign_zero(BigInt* big_int);
 
 // Returns -1 if a < b, 0 if a == b, 1 if a > b 
 int BigInt_compare(const BigInt* a, const BigInt* b);
+int BigInt_is_zero(const BigInt* big_int);
 
 // Adds the value in addend to big_int.  Places the result in big_int.
 void BigInt_add(BigInt* result, BigInt* big_int, const BigInt* addend);
